@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import time
 
 class Joint_bilateral_filter(object):
     def __init__(self, sigma_s, sigma_r):
