@@ -25,7 +25,6 @@ class Joint_bilateral_filter(object):
         for i in range(img.shape[0] * img.shape[1]):
             x = i // img.shape[1]
             y = i % img.shape[1]
-            # print(i, (padded_guidance_norm[x:x+self.wndw_size, y:y+self.wndw_size] - padded_guidance_norm[x+self.pad_w, y+self.pad_w]).shape)
             hr[i] = np.exp(-((padded_guidance_norm[x:x+self.wndw_size, y:y+self.wndw_size] - padded_guidance_norm[x+self.pad_w, y+self.pad_w]) ** 2).reshape(self.wndw_size * self.wndw_size, -1).sum(axis=-1) / (2 * (self.sigma_r ** 2)))
             u_padded_img[i] = padded_img_norm[x: x + self.wndw_size, y: y + self.wndw_size].reshape(-1, img.shape[2])
 

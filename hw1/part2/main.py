@@ -30,7 +30,7 @@ def main():
     bf_out = JBF.joint_bilateral_filter(img_rgb, img_rgb)
     jbf_out = JBF.joint_bilateral_filter(img_rgb, img_gray)
     cost = np.sum(np.abs(bf_out.astype('int32')-jbf_out.astype('int32')))
-    print("COLOR_BGR2GRAY cost = %f" % (cost))
+    print("COLOR_BGR2GRAY cost = %.0f" % (cost))
 
     img_gray_h = img_gray
     cost_h = cost
@@ -52,9 +52,9 @@ def main():
             cost_l = cost
             img_gray_l = img_gray
             jbf_l = jbf_out
-        print("(r,g,b) = (%.1f,%.1f,%.1f) cost = %f" % (r, g, b, cost))
+        print("(r,g,b) = (%.1f,%.1f,%.1f) cost = %.0f" % (r, g, b, cost))
 
-    plt.figure(figsize=(16,8))
+    plt.figure(figsize=(12,8))
     plt.suptitle(args.image_path.split('/')[-1], fontsize=16)
     plt.subplot(231)
     plt.imshow(img_rgb)
