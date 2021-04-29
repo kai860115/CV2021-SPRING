@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # Modifiy this part to load your trained model
     # TODO
     #######################################################################
-
+    model.load_state_dict(torch.load('./checkpoint/%s.pth' % model.name()))
 
     use_cuda = torch.cuda.is_available()
     if use_cuda:

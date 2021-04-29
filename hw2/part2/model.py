@@ -8,17 +8,17 @@ class ConvNet(nn.Module):
         # TODO
         self.cnn = nn.Sequential(
             nn.Conv2d(1, 6, 5),
-            nn.Tanh(),
-            nn.AvgPool2d(2),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
             nn.Conv2d(6, 16, 5),
-            nn.Tanh(),
-            nn.AvgPool2d(2),
-            nn.Conv2d(16, 120, 5),
-            nn.Tanh()
+            nn.ReLU(),
+            nn.MaxPool2d(2),
         )
         self.classifier = nn.Sequential(
+            nn.Linear(256, 120),
+            nn.ReLU(),
             nn.Linear(120, 84),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Linear(84, 10)
         )
 
@@ -37,22 +37,23 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         # TODO
         self.cnn = nn.Sequential(
-            nn.Conv2d(1, 6, 5),
-            nn.BatchNorm2d(6),
-            nn.Tanh(),
-            nn.AvgPool2d(2),
-            nn.Conv2d(6, 16, 5),
-            nn.BatchNorm2d(16),
-            nn.Tanh(),
-            nn.AvgPool2d(2),
-            nn.Conv2d(16, 120, 5),
-            nn.BatchNorm2d(120),
-            nn.Tanh()
+            nn.Conv2d(1, 16, 5, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(16, 32, 5, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, 5, padding=2),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
         )
         self.classifier = nn.Sequential(
+            nn.Linear(576, 120),
+            nn.BatchNorm1d(120),
+            nn.ReLU(),
             nn.Linear(120, 84),
             nn.BatchNorm1d(84),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Linear(84, 10)
         )
 

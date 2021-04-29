@@ -35,7 +35,7 @@ if __name__ == "__main__":
     loss_record, acc_record = {"train": [], "val": []}, {"train": [], "val": []}
     best_acc = 0.0
     # Run any number of epochs you want
-    ep = 10
+    ep = 20
     for epoch in range(ep):
         print('Epoch:', epoch)
         ##############
@@ -83,16 +83,17 @@ if __name__ == "__main__":
         model.eval()
         # TODO
         correct_cnt, total_loss, total_cnt = 0, 0, 0
-        for batch, (x, label) in enumerate(val_loader):
-            if use_cuda:
-                x, label = x.cuda(), label.cuda()
-            out = model(x)
-            loss = criterion(out, label)
-            total_loss += loss.item()
-            _, pred_label = torch.max(out, 1)
-            total_cnt += x.size(0)
-            correct_cnt += (pred_label == label).sum().item()
-        print('Val loss: {:.6f}, acc{:.3f}'.format(correct_cnt / total_cnt, total_loss / len(val_loader)))
+        with torch.no_grad():
+            for batch, (x, label) in enumerate(val_loader):
+                if use_cuda:
+                    x, label = x.cuda(), label.cuda()
+                out = model(x)
+                loss = criterion(out, label)
+                total_loss += loss.item()
+                _, pred_label = torch.max(out, 1)
+                total_cnt += x.size(0)
+                correct_cnt += (pred_label == label).sum().item()
+        print('Val loss: {:.6f}, acc: {:.3f}'.format(total_loss / len(val_loader), correct_cnt / total_cnt))
 
         loss_record['val'].append(total_loss / len(val_loader))
         acc_record['val'].append(correct_cnt / total_cnt)
@@ -101,6 +102,7 @@ if __name__ == "__main__":
         if best_acc < correct_cnt / total_cnt:
             print('save model')
             torch.save(model.state_dict(), './checkpoint/%s.pth' % model.name())
+            best_acc = correct_cnt / total_cnt
 
         model.train()
 
@@ -111,6 +113,7 @@ if __name__ == "__main__":
     plt.plot(range(ep), loss_record['val'], c='tab:cyan', label='validation loss')
     plt.xlabel('epoches')
     plt.ylabel('Loss')
+    plt.ylim((0.0, 0.8))
     plt.title('Loss_{}'.format(model_type))
     plt.legend()
     plt.savefig('Loss_{}.png'.format(model_type))
@@ -120,6 +123,7 @@ if __name__ == "__main__":
     plt.plot(range(ep), acc_record['val'], c='tab:cyan', label='validation acc')
     plt.xlabel('epoches')
     plt.ylabel('Accuracy')
+    plt.ylim((0.6, 1.0))
     plt.title('Accuracy_{}'.format(model_type))
     plt.legend()
     plt.savefig('Accuracy_{}.png'.format(model_type))
