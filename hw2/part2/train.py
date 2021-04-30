@@ -41,6 +41,7 @@ if __name__ == "__main__":
         ##############
         ## Training ##
         ##############
+        model.train()
         
         # Record the information of correct prediction and loss
         correct_cnt, total_loss, total_cnt = 0, 0, 0
@@ -104,7 +105,6 @@ if __name__ == "__main__":
             torch.save(model.state_dict(), './checkpoint/%s.pth' % model.name())
             best_acc = correct_cnt / total_cnt
 
-        model.train()
 
     # Plot Learning Curve
     # TODO
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     plt.plot(range(ep), loss_record['val'], c='tab:cyan', label='validation loss')
     plt.xlabel('epoches')
     plt.ylabel('Loss')
-    plt.ylim((0.0, 0.8))
+    plt.ylim((0.0, 0.5))
     plt.title('Loss_{}'.format(model_type))
     plt.legend()
     plt.savefig('Loss_{}.png'.format(model_type))
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     plt.plot(range(ep), acc_record['val'], c='tab:cyan', label='validation acc')
     plt.xlabel('epoches')
     plt.ylabel('Accuracy')
-    plt.ylim((0.6, 1.0))
+    plt.ylim((0.8, 1.0))
     plt.title('Accuracy_{}'.format(model_type))
     plt.legend()
     plt.savefig('Accuracy_{}.png'.format(model_type))
