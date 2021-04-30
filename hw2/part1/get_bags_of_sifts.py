@@ -32,7 +32,7 @@ def get_bags_of_sifts(image_paths):
     Output : 
         image_feats : (N, d) feature, each row represent a feature of an image
     '''
-    with open('vocab.pkl', 'rb') as handle:
+    with open('./part1/vocab.pkl', 'rb') as handle:
         vocab = pickle.load(handle)
 
     image_feats = []
