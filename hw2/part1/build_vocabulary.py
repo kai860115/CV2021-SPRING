@@ -7,7 +7,7 @@ from time import time
 #This function will sample SIFT descriptors from the training images,
 #cluster them with kmeans, and then return the cluster centers.
 
-def build_vocabulary(image_paths, vocab_size, vocab_step):
+def build_vocabulary(image_paths, vocab_size):
     ##################################################################################
     # TODO:                                                                          #
     # Load images from the training set. To save computation time, you don't         #
@@ -60,12 +60,11 @@ def build_vocabulary(image_paths, vocab_size, vocab_step):
 
     for path in image_paths:
         img = np.asarray(Image.open(path)).astype(np.float32)
-        frames, descriptors = dsift(img, step=[vocab_step, vocab_step], fast=True)
+        frames, descriptors = dsift(img, step=[16, 16], fast=True)
         bag_of_features.append(descriptors)
     bag_of_features = np.concatenate(bag_of_features, axis=0).astype(np.float32)
-    print(bag_of_features.shape)
 
-    vocab = kmeans(bag_of_features, vocab_size, initialization='PLUSPLUS')
+    vocab = kmeans(bag_of_features, vocab_size, initialization='PLUSPLUS', verbose=True)
 
     ##################################################################################
     #                                END OF YOUR CODE                                #

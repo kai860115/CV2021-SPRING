@@ -5,9 +5,8 @@ import pickle
 import scipy.spatial.distance as distance
 from cyvlfeat.sift.dsift import dsift
 from time import time
-from tqdm import tqdm
 
-def get_bags_of_sifts(image_paths, vocab_size, vocab_step, bag_step):
+def get_bags_of_sifts(image_paths):
     ############################################################################
     # TODO:                                                                    #
     # This function assumes that 'vocab.pkl' exists and contains an N x 128    #
@@ -33,19 +32,18 @@ def get_bags_of_sifts(image_paths, vocab_size, vocab_step, bag_step):
     Output : 
         image_feats : (N, d) feature, each row represent a feature of an image
     '''
-    with open('vocab-%d-%d.pkl'%(vocab_size, vocab_step), 'rb') as handle:
+    with open('vocab.pkl', 'rb') as handle:
         vocab = pickle.load(handle)
 
     image_feats = []
-    for path in tqdm(image_paths):
+    for path in image_paths:
         img = np.asarray(Image.open(path)).astype(np.float32)
-        frames, descriptors = dsift(img, step=[bag_step, bag_step], fast=True)
+        frames, descriptors = dsift(img, step=[3, 3], fast=True)
         dist = distance.cdist(vocab, descriptors, 'euclidean')
         hist, bin_edges = np.histogram(np.argmin(dist, axis=0), bins=len(vocab))
-        hist = hist / hist.sum()
+        # hist = hist / hist.sum()
         image_feats.append(hist)
     image_feats = np.asarray(image_feats)
-    print(image_feats.shape)
     
     #############################################################################
     #                                END OF YOUR CODE                           #

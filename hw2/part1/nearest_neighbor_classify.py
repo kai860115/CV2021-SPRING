@@ -37,7 +37,7 @@ def nearest_neighbor_classify(train_image_feats, train_labels, test_image_feats,
             category for each testing image.
     '''
     K = k
-    dist = distance.cdist(test_image_feats, train_image_feats, 'euclidean')
+    dist = distance.cdist(test_image_feats, train_image_feats, 'seuclidean')
     test_predicts = []
 
     for d in dist:

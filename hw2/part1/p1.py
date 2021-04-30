@@ -29,10 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--feature', help='feature', type=str, default='dumy_feature')
 parser.add_argument('--classifier', help='classifier', type=str, default='dumy_classifier')
 parser.add_argument('--dataset_path', help='dataset path', type=str, default='../hw2_data/p1/')
-parser.add_argument('--vocab_size', help='vocab size', type=int, default=400)
-parser.add_argument('--vocab_step', help='vocab step', type=int, default=5)
-parser.add_argument('--bag_step', help='bag step', type=int, default=5)
-parser.add_argument('--k', help='k', type=int, default=5)
+parser.add_argument('--vocab_size', help='vocab size', type=int, default=100)
 args = parser.parse_args()
 
 DATA_PATH = args.dataset_path
@@ -58,16 +55,18 @@ NUM_TRAIN_PER_CAT = 100
 FEATURE = args.feature
 CLASSIFIER = args.classifier
 
-VOCAB_STEP = args.vocab_step
 VOCAB_SIZE = args.vocab_size
-BAG_STEP = args.bag_step
+
+if FEATURE == 'tiny_image':
+    K = 1
+else:
+    K = 10
 
 def main():
     #This function returns arrays containing the file path for each train
     #and test image, as well as arrays with the label of each train and
     #test image. By default all four of these arrays will be 1500 where each
     #entry is a string.
-    print("=== VOCAB_SIZE: %d VOCAB_STEP: %d BAG_STEP: %d ==="%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP))
     print("Getting paths and labels for all train and test data")
     train_image_paths, test_image_paths, train_labels, test_labels = \
         get_image_paths(DATA_PATH, CATEGORIES, NUM_TRAIN_PER_CAT)
@@ -86,28 +85,28 @@ def main():
 
     elif FEATURE == 'bag_of_sift':
         # TODO Modify build_vocabulary.py
-        if os.path.isfile('vocab-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP)) is False:
+        if os.path.isfile('vocab.pkl') is False:
             print('No existing visual word vocabulary found. Computing one from training images\n')
             vocab_size = VOCAB_SIZE   ### Vocab_size is up to you. Larger values will work better (to a point) but be slower to compute
-            vocab = build_vocabulary(train_image_paths, vocab_size, VOCAB_STEP)
-            with open('vocab-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP), 'wb') as handle:
+            vocab = build_vocabulary(train_image_paths, vocab_size)
+            with open('vocab.pkl', 'wb') as handle:
                 pickle.dump(vocab, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        if os.path.isfile('train_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP)) is False:
+        if os.path.isfile('train_image_feats.pkl') is False:
             # TODO Modify get_bags_of_sifts.py
-            train_image_feats = get_bags_of_sifts(train_image_paths, VOCAB_SIZE, VOCAB_STEP, BAG_STEP)
-            with open('train_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP), 'wb') as handle:
+            train_image_feats = get_bags_of_sifts(train_image_paths)
+            with open('train_image_feats.pkl', 'wb') as handle:
                 pickle.dump(train_image_feats, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
-            with open('train_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP), 'rb') as handle:
+            with open('train_image_feats.pkl', 'rb') as handle:
                 train_image_feats = pickle.load(handle)
 
-        if os.path.isfile('test_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP)) is False:
-            test_image_feats  = get_bags_of_sifts(test_image_paths, VOCAB_SIZE, VOCAB_STEP, BAG_STEP)
-            with open('test_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP), 'wb') as handle:
+        if os.path.isfile('test_image_feats.pkl') is False:
+            test_image_feats  = get_bags_of_sifts(test_image_paths)
+            with open('test_image_feats.pkl', 'wb') as handle:
                 pickle.dump(test_image_feats, handle, protocol=pickle.HIGHEST_PROTOCOL)
         else:
-            with open('test_image_feats-%d-%d-%d.pkl'%(VOCAB_SIZE, VOCAB_STEP, BAG_STEP), 'rb') as handle:
+            with open('test_image_feats.pkl', 'rb') as handle:
                 test_image_feats = pickle.load(handle)
     
     elif FEATURE == 'dumy_feature':
@@ -127,7 +126,7 @@ def main():
 
     if CLASSIFIER == 'nearest_neighbor':
         # TODO Modify nearest_neighbor_classify.py
-        predicted_categories = nearest_neighbor_classify(train_image_feats, train_labels, test_image_feats, args.k)
+        predicted_categories = nearest_neighbor_classify(train_image_feats, train_labels, test_image_feats, K)
     
     elif CLASSIFIER == 'dumy_classifier':
         # The dummy classifier simply predicts a random category for every test case
